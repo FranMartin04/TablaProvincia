@@ -43,9 +43,9 @@ public class ControladorProvincia {
 	public static String[] getTitulosColumnas() {
 		return new String[] { "Code", "Label", "Parent_Code"};
 	}
-	public static Object[][] getDatosDeTabla() {
+	public static Object[][] getDatosDeTabla(MongoCollection<Document> coll) {
 		// Obtengo todas las personas
-		List<Provincias> provincias = ControladorProvincia.getAllPro(null);
+		List<Provincias> provincias = ControladorProvincia.getAllPro(coll);
 		// Preparo una estructura para pasar al constructor de la JTable
 		Object[][] datos = new Object[provincias.size()][3];
 		// Cargo los datos de la lista de personas en la matriz de los datos
