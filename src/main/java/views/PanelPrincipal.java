@@ -4,7 +4,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JRadioButton;
+
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import java.awt.GridBagLayout;
@@ -32,14 +32,16 @@ import com.mongodb.client.MongoDatabase;
 import controller.ControladorCCAA;
 import controller.ControladorProvincia;
 import entities.Ccaa;
-
+import entities.Provincias;
 
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
-import javax.swing.ButtonGroup;
+
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
+
 import java.util.List;
+
 import java.awt.event.ActionEvent;
 
 public class PanelPrincipal extends JPanel {
@@ -52,8 +54,8 @@ public class PanelPrincipal extends JPanel {
 	private String titulosEnTabla[] = ControladorProvincia.getTitulosColumnas();
 	// Mongodb inicializando parámetros.
 	int port_no = 27017;
-	String host_name = "localhost", db_name = "ComunidadesProvinciasPoblaciones",
-			db_coll_name = "provincias", db_coll_name2 = "ccaa";
+	String host_name = "localhost", db_name = "ComunidadesProvinciasPoblaciones", db_coll_name = "provincias",
+			db_coll_name2 = "ccaa";
 
 	// Mongodb creando la cadena de conexión.
 	String client_url = "mongodb://" + host_name + ":" + port_no + "/" + db_name;
@@ -69,8 +71,6 @@ public class PanelPrincipal extends JPanel {
 	MongoCollection<Document> coll = db.getCollection(db_coll_name);
 	MongoCollection<Document> coll2 = db.getCollection(db_coll_name2);
 	private Object datosEnTabla[][] = ControladorProvincia.getDatosDeTabla(coll);
-	
-
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -81,7 +81,7 @@ public class PanelPrincipal extends JPanel {
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-			
+
 			}
 		});
 	}
@@ -102,7 +102,7 @@ public class PanelPrincipal extends JPanel {
 		this.dtm = getDefaultTableModelNoEditable();
 		JTable jTable = new JTable(dtm);
 
-		 dtm = getDefaultTableModelNoEditable();
+		dtm = getDefaultTableModelNoEditable();
 		jTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
@@ -112,10 +112,19 @@ public class PanelPrincipal extends JPanel {
 						// Obtener los datos de la fila seleccionada
 						String code = jTable.getValueAt(selectedRow, 0).toString();
 						String label = (String) jTable.getValueAt(selectedRow, 1);
-
+						String parentCode = jTable.getValueAt(selectedRow, 2).toString();
 
 						tfCode.setText(code);
 						tfNombre.setText(label);
+						// Buscar la Ccaa correspondiente al parent code en el JComboBox
+						for (int i = 0; i < jcbCcaa.getItemCount(); i++) {
+							Ccaa ccaa = jcbCcaa.getItemAt(i);
+							if (ccaa.getCode().equals(parentCode)) {
+								// Seleccionar automáticamente la Ccaa correspondiente en el JComboBox
+								jcbCcaa.setSelectedIndex(i);
+								break;
+							}
+						}
 
 					}
 				}
@@ -208,7 +217,11 @@ public class PanelPrincipal extends JPanel {
 		JButton btnGuardar = new JButton("Guardar");
 		btnGuardar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-
+				try {
+					guardar();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 		});
 		GridBagConstraints gbc_btnGuardar = new GridBagConstraints();
@@ -225,11 +238,13 @@ public class PanelPrincipal extends JPanel {
 
 		cargaTodasCCAA();
 	}
-	private DefaultTableModel getDefaultTableModelNoEditable () {
+
+	private DefaultTableModel getDefaultTableModelNoEditable() {
 		DefaultTableModel dtm = new DefaultTableModel(datosEnTabla, titulosEnTabla) {
-			
+
 			/**
-			 * La sobreescritura de este método nos permite controlar qué celdas queremos que sean editables
+			 * La sobreescritura de este método nos permite controlar qué celdas queremos
+			 * que sean editables
 			 */
 			@Override
 			public boolean isCellEditable(int row, int column) {
@@ -241,24 +256,41 @@ public class PanelPrincipal extends JPanel {
 		};
 		return dtm;
 	}
+
 	private void cargaTodasCCAA() {
 		List<Ccaa> ccaa = (List<Ccaa>) ControladorCCAA.getAllCCAA(coll2);
 		for (Ccaa c : ccaa) {
 			this.jcbCcaa.addItem(c);
 		}
 	}
-	private void mostrarPanelCcaaEnJDialog () {
+
+	private void mostrarPanelCcaaEnJDialog() {
 		JDialog dialogo = new JDialog();
 		dialogo.setResizable(true);
 		dialogo.setTitle("Gestión de usuario");
-		dialogo.setContentPane(new PanelCcaa(
-				(Ccaa) this.jcbCcaa.getSelectedItem(), this.jcbCcaa));
+		dialogo.setContentPane(new PanelCcaa((Ccaa) this.jcbCcaa.getSelectedItem(), this.jcbCcaa));
 		dialogo.pack();
 		dialogo.setModal(true);
-		dialogo.setLocation(
-				(Toolkit.getDefaultToolkit().getScreenSize().width)/2 - dialogo.getWidth()/2, 
-				(Toolkit.getDefaultToolkit().getScreenSize().height)/2 - dialogo.getHeight()/2);
+		dialogo.setLocation((Toolkit.getDefaultToolkit().getScreenSize().width) / 2 - dialogo.getWidth() / 2,
+				(Toolkit.getDefaultToolkit().getScreenSize().height) / 2 - dialogo.getHeight() / 2);
 		dialogo.setVisible(true);
 	}
+
+
+	private void guardar() {
+		ControladorProvincia.updateDocument(coll, this.tfCode.getText(), this.tfNombre.getText(),((Ccaa)jcbCcaa.getSelectedItem()).getCode());
+	}
+
+	public MongoCollection<Document> getColl2() {
+		return coll2;
+	}
+
+	public void setColl2(MongoCollection<Document> coll2) {
+		this.coll2 = coll2;
+	}
+
+
+	
+	
 
 }

@@ -4,11 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bson.Document;
+import org.bson.conversions.Bson;
 
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
-
+import com.mongodb.client.model.Updates;
+import com.mongodb.client.result.UpdateResult;
 
 import entities.Provincias;
 
@@ -59,5 +61,20 @@ public class ControladorProvincia {
 
 		return datos;
 	}
+	public static void updateDocument (MongoCollection<Document> col,String code, String label, String parent_code) {
+        try {
+        	Document query = new Document().append("code",  code);
+        	Bson update = Updates.combine(Updates.set("label", label));
+        	Bson update2 = Updates.combine(Updates.set("parent_code", parent_code));
+        	UpdateResult result = col.updateOne(query, update);
+        	UpdateResult resultado = col.updateOne(query, update2);
+        	
+        	System.out.println("Modificados");
+        }
+        catch (Exception ex) {
+        	ex.printStackTrace();
+        }
+        
+    }
 
 }

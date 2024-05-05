@@ -13,6 +13,11 @@
 			<artifactId>mongo-java-driver</artifactId>
 			<version>3.12.14</version>
 		</dependency>
+		<dependency>
+			<groupId>org.fmjsoft.org</groupId>
+			<artifactId>GestionCentroEducativoJPA</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 
 </project>
