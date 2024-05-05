@@ -6,18 +6,27 @@ import javax.swing.JLabel;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JTextField;
+
+import entities.Ccaa;
 
 public class PanelCcaa extends JPanel {
 
 	private static final long serialVersionUID = 1L;
-	private JTextField textField;
-	private JTextField textField_1;
+	private JTextField jtfCode;
+	private JTextField jtfLabel;
+	private Ccaa ccaa;
+	JComboBox<Ccaa> jcbCcaa;
 
 	/**
 	 * Create the panel.
 	 */
-	public PanelCcaa() {
+	public PanelCcaa(Ccaa ccaa, JComboBox<Ccaa> jcbCcaa) {
+		
+		this.ccaa = ccaa;
+		this.jcbCcaa = jcbCcaa;
+		
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[]{0, 0, 0, 0, 0, 0, 0, 0};
 		gridBagLayout.rowHeights = new int[]{0, 0, 0, 0, 0};
@@ -40,15 +49,15 @@ public class PanelCcaa extends JPanel {
 		gbc_lblNewLabel.gridy = 1;
 		add(lblNewLabel, gbc_lblNewLabel);
 		
-		textField = new JTextField();
-		GridBagConstraints gbc_textField = new GridBagConstraints();
-		gbc_textField.gridwidth = 5;
-		gbc_textField.insets = new Insets(0, 0, 5, 0);
-		gbc_textField.fill = GridBagConstraints.HORIZONTAL;
-		gbc_textField.gridx = 2;
-		gbc_textField.gridy = 1;
-		add(textField, gbc_textField);
-		textField.setColumns(10);
+		jtfCode = new JTextField();
+		GridBagConstraints gbc_jtfCode = new GridBagConstraints();
+		gbc_jtfCode.gridwidth = 5;
+		gbc_jtfCode.insets = new Insets(0, 0, 5, 0);
+		gbc_jtfCode.fill = GridBagConstraints.HORIZONTAL;
+		gbc_jtfCode.gridx = 2;
+		gbc_jtfCode.gridy = 1;
+		add(jtfCode, gbc_jtfCode);
+		jtfCode.setColumns(10);
 		
 		JLabel lblNewLabel_1 = new JLabel("Nombre:");
 		GridBagConstraints gbc_lblNewLabel_1 = new GridBagConstraints();
@@ -58,22 +67,27 @@ public class PanelCcaa extends JPanel {
 		gbc_lblNewLabel_1.gridy = 2;
 		add(lblNewLabel_1, gbc_lblNewLabel_1);
 		
-		textField_1 = new JTextField();
-		GridBagConstraints gbc_textField_1 = new GridBagConstraints();
-		gbc_textField_1.gridwidth = 5;
-		gbc_textField_1.insets = new Insets(0, 0, 5, 0);
-		gbc_textField_1.fill = GridBagConstraints.HORIZONTAL;
-		gbc_textField_1.gridx = 2;
-		gbc_textField_1.gridy = 2;
-		add(textField_1, gbc_textField_1);
-		textField_1.setColumns(10);
+		jtfLabel = new JTextField();
+		GridBagConstraints gbc_jtfLabel = new GridBagConstraints();
+		gbc_jtfLabel.gridwidth = 5;
+		gbc_jtfLabel.insets = new Insets(0, 0, 5, 0);
+		gbc_jtfLabel.fill = GridBagConstraints.HORIZONTAL;
+		gbc_jtfLabel.gridx = 2;
+		gbc_jtfLabel.gridy = 2;
+		add(jtfLabel, gbc_jtfLabel);
+		jtfLabel.setColumns(10);
 		
 		JButton btnGuardar = new JButton("Guardar");
 		GridBagConstraints gbc_btnGuardar = new GridBagConstraints();
 		gbc_btnGuardar.gridx = 6;
 		gbc_btnGuardar.gridy = 3;
 		add(btnGuardar, gbc_btnGuardar);
-
+		
+		mostrarDatosCcaa();
+	}
+	private void mostrarDatosCcaa() {
+		this.jtfCode.setText(this.ccaa.getCode());
+		this.jtfLabel.setText(this.ccaa.getLabel());
 	}
 
 }
